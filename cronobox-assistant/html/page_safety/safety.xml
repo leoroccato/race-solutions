@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resultspage user="cronobox" view="lgView_Announcements">
+	<results>
+		<columns date="Date" time="Time" text="Announcement" />
+	
+</resultspage>

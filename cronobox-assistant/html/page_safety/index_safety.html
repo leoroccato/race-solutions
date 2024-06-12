@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    html {
+        height: 100%;
+    }
+
+    header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial;
+    }
+
+    .text-box {
+        text-align: center; /* Centraliza o texto horizontalmente */
+        font-size: 25px;
+        font-weight: 500;
+    }
+
+    p {
+        margin: 2px 0; /* Espaçamento entre os parágrafos */
+    }
+
+    #horario {
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background-image: url('fundo_safety.jpg'); 
+        background-size: 100% 100%;
+        background-position: center; 
+        background-repeat: no-repeat; 
+        background-color: #000;
+        height: 100%; 
+        min-height: 100%;
+        font-family: Arial;
+        font-size: larger;
+    }
+
+    .timing-screen {
+        width: 100%;
+        margin-top: 10px;
+        background-color: rgba(0, 0, 0, 0);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        background-color: rgba(255, 255, 255, 0.1); /* Semi-transparente para as células */
+        border-width: 0; /* Define as bordas superior e inferior como 0, e esquerda e direita como 1px */
+    }
+
+    th {
+        background-color: rgba(255, 255, 255, 0.2); /* Mais visibilidade para o cabeçalho */
+        color: yellow;
+    }
+
+    td {
+        background-color: transparent; /* Garante que a célula padrão não tenha fundo */
+    }
+
+    /* Linhas ímpares com fundo semi-transparente */
+    tr:nth-child(odd) td {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Linhas pares sem fundo específico, usando o preto do background */
+    tr:nth-child(even) td {
+        background-color: transparent; /* Usa o fundo preto do body */
+    }
+
+    th:first-child, td:first-child {
+        border-left: none;
+        width: 20%;
+    }
+
+    th:nth-child(2), td:nth-child(2) {
+        border-left: none;
+        width: 10%;
+    }
+
+
+    th:last-child, td:last-child {
+        border-right: none;
+        width: 10%;
+    }
+    </style>
+    <title>Safety Line Endurance</title>
+</head>
+<body>
+    <header>
+        <div class="text-box">
+            <p>Horário do Safety Car:</p>
+            <p id="horario">1:22.356</p>
+    </header>
+    <body>
+        <div class="timing-screen">
+            <table>
+                <thead>
+                    <tr>
+                        <th>HORÁRIO DA PASSAGEM</th>
+                        <th>NÚMERO</th>
+                        <th>PILOTO</th>
+                        <th>CAT</th>
+                        <th>CARRO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1:24.356</td>
+                        <td>34</td>
+                        <td>Lewis Hamilton</td>
+                        <td>P1</td>
+                        <td>Ferrari</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+    </html>
+</body>
+</html>

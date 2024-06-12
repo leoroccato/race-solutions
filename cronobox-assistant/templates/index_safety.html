@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Safety Line Endurance</title>
+</head>
+<body>
+    <header>
+        <div class="text-box">
+            <p>Horário do Safety Car:</p>
+            <p id="horario"></p>
+    </header>
+    <body>
+        <div class="timing-screen">
+            <table>
+                <thead>
+                    <tr>
+                        <th>HORÁRIO DA PASSAGEM</th>
+                        <th>NÚMERO</th>
+                        <th>PILOTO</th>
+                        <th>CAT</th>
+                        <th>CARRO</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    
+                    <tr>
+                        <td>17:57:27.820</td>
+                        <td>27</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            function atualizarHorario() {
+                $.ajax({
+                    url: '/dados_horario',
+                    method: 'GET',
+                    success: function(data) {
+                        $('#horario').text(data.horario_safety_car);
+                    }
+                });
+            }
+    
+            function atualizarDadosPilotos() {
+                $.ajax({
+                    url: '/dados_pilotos',
+                    method: 'GET',
+                    success: function(data) {
+                        var tableBody = $('#table-body');
+                        tableBody.empty();
+                        data.informacoes.forEach(function(info) {
+                            var row = '<tr class="' + info.classe + '">' +
+                                '<td>' + info.horario_passagem + '</td>' +
+                                '<td>' + info.numero + '</td>' +
+                                '<td>' + info.piloto + '</td>' +
+                                '<td>' + info.categoria + '</td>' +
+                                '<td>' + info.carro + '</td>' +
+                                '</tr>';
+                            
+                            // Remove a última linha se o número de linhas for 15 ou mais
+                            if (tableBody.children().length >= 15) {
+                                tableBody.children().last().remove();
+                            }
+                            
+                            tableBody.prepend(row);
+                        });
+                    }
+                });
+            }
+            
+            // Atualiza o horário e os dados dos pilotos a cada 5 segundos
+            setInterval(atualizarHorario, 5000);
+            setInterval(atualizarDadosPilotos, 5000);
+        </script>
+    </body>
+    </html>
+</body>
+</html>
