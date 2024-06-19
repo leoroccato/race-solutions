@@ -7,8 +7,8 @@ import time
 import customtkinter as ctk
 
 # Módulos
-from safety_cleaned import SafetyCarMonitor
-from estouro_velocidade import pegar_infos_piloto
+from safety_car_monitor import main_loop
+from speed_monitor import pegar_infos_piloto
 
 
 # Criando as Threads para eventos de Safety e Velocidade
@@ -41,7 +41,6 @@ def iniciar_programa(path_xml, path_xml_safety, stop_thread, target_function):
     stop_thread.clear()
     limpar_xml(path_xml_safety)
     threading.Thread(target=target_function, args=(stop_thread,)).start()
-
 
 
 def reiniciar_programa(path_xml, path_xml_safety, stop_thread, target_function):
@@ -126,7 +125,6 @@ ctk.set_appearance_mode('dark')
 
 # Frames Top e Bottom
 top_frame = ctk.CTkFrame(master=root, fg_color='transparent')
-top_frame.pack(side='top', fill='both', expand=True)
 bottom_frame = ctk.CTkFrame(master=root, fg_color='transparent')
 bottom_frame.pack(side='top', fill='both', expand=True)
 

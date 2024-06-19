@@ -7,8 +7,8 @@ import requests
 import customtkinter as ctk
 # Módulos
 from server import run_server
-from safety import main_loop
-from estouro_velocidade import pegar_infos_piloto
+from safety_car_monitor import main_loop
+from speed_monitor import pegar_infos_piloto
 
 # Criando as Threads para eventos de Safety e Velocidade
 stop_thread_safety = threading.Event()

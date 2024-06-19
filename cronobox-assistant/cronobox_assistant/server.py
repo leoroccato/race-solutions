@@ -35,6 +35,7 @@ def dados_pilotos():
         'informacoes': informacoes_globais
     })
 
+
 @app.route('/dados_velocidade', methods=['GET'])
 def dados_velocidade():
     return jsonify({
@@ -139,6 +140,7 @@ def reset_dados():
 
 def run_server():
     app.run(debug=True, port=5000, use_reloader=False, threaded=True)
+
 
 if __name__ == '__main__':
     run_server()
