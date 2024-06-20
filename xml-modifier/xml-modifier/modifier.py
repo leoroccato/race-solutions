@@ -6,6 +6,9 @@ import customtkinter as ctk
 from customtkinter import filedialog
 import xml.etree.ElementTree as ET
 
+# TODO: Concatenar valor na frente e atrás
+
+
 # Criando logger
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -117,7 +120,7 @@ class XMLModifierApp(ctk.CTk):
         # ------------------------------DEFINE BASIC ATTRIBUTES
 
         self.title("XML Modifier")
-        self.geometry("700x500")
+        self.geometry("900x700")
         self.resizable(width=False, height=False)
 
         # ------------------------------DEFINE FRAMES
@@ -159,13 +162,6 @@ class XMLModifierApp(ctk.CTk):
 
         # -----------------------------BOTTOM LEFT FRAME ELEMENTS
 
-        # Select which field to alter
-        self.field_label = ctk.CTkLabel(bottom_left_frame, text="Select Field:")
-        self.field_label.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.field_combobox = ctk.CTkComboBox(bottom_left_frame)
-        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
         # Enter what value to alter
         self.value_label = ctk.CTkLabel(bottom_left_frame, text="Enter Value to Concatenate:")
         self.value_label.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
@@ -173,24 +169,73 @@ class XMLModifierApp(ctk.CTk):
         self.value_entry = ctk.CTkEntry(bottom_left_frame)
         self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
 
-        # Button to Add a new Modification
-        self.add_button = ctk.CTkButton(bottom_left_frame, text="Add Modification", command=self.add_modification)
-        self.add_button.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+        self.value_entry = ctk.CTkEntry(bottom_left_frame)
+        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.value_entry = ctk.CTkEntry(bottom_left_frame)
+        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.value_entry = ctk.CTkEntry(bottom_left_frame)
+        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.value_entry = ctk.CTkEntry(bottom_left_frame)
+        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
 
         # -----------------------------BOTTOM CENTER FRAME ELEMENTS
 
-        self.modification_listbox = ctk.CTkTextbox(bottom_center_frame, height=500)
-        self.modification_listbox.pack(side='top', expand=False, pady=5)
+        # Select which field to alter
+        self.field_label = ctk.CTkLabel(bottom_center_frame, text="Select Field:")
+        self.field_label.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
+        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
+        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
+        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
+        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
+        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        # Button to Add a new Modification
+        self.add_button = ctk.CTkButton(bottom_left_frame, text="Add Modification", command=self.add_modification)
+        self.add_button.pack(side='top', anchor='w', expand=False, pady=10, padx=10)
+
+        # Button to start modifying
+        self.modify_button = ctk.CTkButton(bottom_center_frame, text="Start", command=self.start_modifying)
+        self.modify_button.pack(side='top', anchor='w', expand=False, pady=10, padx=10)
 
         # -----------------------------BOTTOM RIGHT FRAME ELEMENTS
 
-        # Button to start modifying
-        self.modify_button = ctk.CTkButton(bottom_right_frame, text="Start", command=self.start_modifying)
-        self.modify_button.pack(side='top', anchor='e', expand=False, pady=40, padx=10)
+        # Enter what value to alter
+        self.value_label = ctk.CTkLabel(bottom_right_frame, text="Enter Value to Concatenate:")
+        self.value_label.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.value_entry = ctk.CTkEntry(bottom_right_frame)
+        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.value_entry = ctk.CTkEntry(bottom_right_frame)
+        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.value_entry = ctk.CTkEntry(bottom_right_frame)
+        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.value_entry = ctk.CTkEntry(bottom_right_frame)
+        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+
+        self.value_entry = ctk.CTkEntry(bottom_right_frame)
+        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
 
         # Button to stop modifying
         self.stop_button = ctk.CTkButton(bottom_right_frame, text="Stop", command=self.stop_modifying)
-        self.stop_button.pack(side='top', anchor='e', expand=False, pady=0, padx=10)
+        self.stop_button.pack(side='top', anchor='w', expand=False, pady=10, padx=10)
+
+
 
         self.modifications = []
         self.modifying = False
