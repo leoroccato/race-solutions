@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class XMLModifierApp(ctk.CTk):
+
     # Function for open dialog to browse
     def open_file_dialog(self):
         try:
@@ -40,34 +41,57 @@ class XMLModifierApp(ctk.CTk):
             input_path = self.input_path_entry.get()
             tree = ET.parse(input_path)
             root = tree.getroot()
-            fields = []
+            self.fields = []
             # Para cada campo
             for label in root.findall('.//label'):
-                fields.append(label.attrib['type'])
+                self.fields.append(label.attrib['type'])
             for column in root.find('.//columns').attrib:
-                fields.append(column)
-            self.field_combobox.configure(values=fields)
+                self.fields.append(column)
+            # Certifique-se de que fields não esteja vazio e contenha strings
+            if not self.fields:
+                logger.warning('No fields found in XML')
+                return
+            logger.debug(f'Fields found: {self.fields}')
+            # Configurar os valores dos comboboxes
+            for combobox in self.comboboxes:
+                combobox.configure(values=self.fields)
+                logger.debug(f'Combobox {combobox} configured with values: {combobox.cget("values")}')
+                combobox.set('')
+            logger.info('Comboboxes updated with fields from XML')
         except Exception as e:
             logger.error(f'Error loading XML file: {e}')
 
     # Function to add a new modification
     def add_modification(self):
         try:
-            logger.info('Adding modification')
-            selected_field = self.field_combobox.get()
-            new_value = self.value_entry.get()
-            if selected_field and new_value:
-                modification = (selected_field, new_value)
-                self.modifications.append(modification)
-                self.modification_listbox.insert(ctk.END, f"{selected_field}: {new_value}")
-                self.modification_listbox.insert(ctk.END, "\n")
-                self.field_combobox.set('')
-                self.value_entry.delete(0, ctk.END)
-                logger.debug(f'Modification added to {selected_field}: {new_value}')
+            logger.info('Adding modifications')
+
+            # Coleta as modificações dos 5 conjuntos de campos
+            modifications = []
+            for i in range(5):
+                prefixo = self.prefix_entries[i].get()
+                selected_field = self.comboboxes[i].get()
+                sufixo = self.sufix_entries[i].get()
+
+                if prefixo and selected_field and sufixo:
+                    modification = (prefixo, selected_field, sufixo)
+                    modifications.append(modification)
+                    # Limpa os campos
+                    self.prefix_entries[i].delete(0, ctk.END)
+                    self.comboboxes[i].set('')
+                    self.sufix_entries[i].delete(0, ctk.END)
+                    logger.debug(f'Modification added: {modification}')
+                    print(f'Modification added: {modification}')
+                else:
+                    logger.warning(f'Missing field or value in set {i + 1}')
+
+            if modifications:
+                self.modifications.extend(modifications)
             else:
-                logger.warning('No field or no value to modification')
+                logger.warning('No modifications to add')
+
         except Exception as e:
-            logger.error(f'Error adding modification: {e}')
+            logger.error(f'Error adding modifications: {e}')
 
     # Function to start modifying
     def start_modifying(self):
@@ -120,8 +144,14 @@ class XMLModifierApp(ctk.CTk):
         # ------------------------------DEFINE BASIC ATTRIBUTES
 
         self.title("XML Modifier")
-        self.geometry("900x700")
+        self.geometry("500x600")
         self.resizable(width=False, height=False)
+
+        # Listas para armazenar widgets
+        self.prefix_entries = []
+        self.comboboxes = []
+        self.suffix_entries = []
+        self.fields = ['meu ovo', 'direito', 'esquerdo']
 
         # ------------------------------DEFINE FRAMES
 
@@ -163,81 +193,53 @@ class XMLModifierApp(ctk.CTk):
         # -----------------------------BOTTOM LEFT FRAME ELEMENTS
 
         # Enter what value to alter
-        self.value_label = ctk.CTkLabel(bottom_left_frame, text="Enter Value to Concatenate:")
-        self.value_label.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+        self.value_label = ctk.CTkLabel(bottom_left_frame, text="Prefix:")
+        self.value_label.pack(side='top', anchor='w', expand=False, pady=10, padx=15)
 
-        self.value_entry = ctk.CTkEntry(bottom_left_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+        for i in range(5):
+            prefix_entry = ctk.CTkEntry(bottom_left_frame)
+            prefix_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=15)
+            self.prefix_entries.append(prefix_entry)
 
-        self.value_entry = ctk.CTkEntry(bottom_left_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.value_entry = ctk.CTkEntry(bottom_left_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.value_entry = ctk.CTkEntry(bottom_left_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.value_entry = ctk.CTkEntry(bottom_left_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+        # Button to start modifying
+        self.modify_button = ctk.CTkButton(bottom_left_frame, text="Start", command=self.start_modifying)
+        self.modify_button.pack(side='top', anchor='w', expand=False, pady=10, padx=15)
 
         # -----------------------------BOTTOM CENTER FRAME ELEMENTS
 
         # Select which field to alter
-        self.field_label = ctk.CTkLabel(bottom_center_frame, text="Select Field:")
-        self.field_label.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+        self.field_label = ctk.CTkLabel(bottom_center_frame, text="XML Fields:")
+        self.field_label.pack(side='top', anchor='w', expand=False, pady=10, padx=15)
 
-        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
-        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+        for i in range(5):
+            combobox = ctk.CTkComboBox(bottom_center_frame, values=self.fields)
+            combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=15)
+            self.comboboxes.append(combobox)
 
-        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
-        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
-        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
-        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.field_combobox = ctk.CTkComboBox(bottom_center_frame)
-        self.field_combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        # Button to Add a new Modification
-        self.add_button = ctk.CTkButton(bottom_left_frame, text="Add Modification", command=self.add_modification)
-        self.add_button.pack(side='top', anchor='w', expand=False, pady=10, padx=10)
-
-        # Button to start modifying
-        self.modify_button = ctk.CTkButton(bottom_center_frame, text="Start", command=self.start_modifying)
-        self.modify_button.pack(side='top', anchor='w', expand=False, pady=10, padx=10)
+        self.label_running = ctk.CTkLabel(bottom_center_frame, text='Runnning...')
+        self.label_running.pack(side='top', anchor='w', expand=False, pady=10, padx=35)
 
         # -----------------------------BOTTOM RIGHT FRAME ELEMENTS
 
         # Enter what value to alter
-        self.value_label = ctk.CTkLabel(bottom_right_frame, text="Enter Value to Concatenate:")
-        self.value_label.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+        self.value_label = ctk.CTkLabel(bottom_right_frame, text="Sufix:")
+        self.value_label.pack(side='top', anchor='w', expand=False, pady=10, padx=15)
 
-        self.value_entry = ctk.CTkEntry(bottom_right_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.value_entry = ctk.CTkEntry(bottom_right_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.value_entry = ctk.CTkEntry(bottom_right_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.value_entry = ctk.CTkEntry(bottom_right_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
-
-        self.value_entry = ctk.CTkEntry(bottom_right_frame)
-        self.value_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=10)
+        for i in range(5):
+            suffix_entry = ctk.CTkEntry(bottom_right_frame)
+            suffix_entry.pack(side='top', anchor='w', expand=False, pady=5, padx=15)
+            self.suffix_entries.append(suffix_entry)
 
         # Button to stop modifying
         self.stop_button = ctk.CTkButton(bottom_right_frame, text="Stop", command=self.stop_modifying)
-        self.stop_button.pack(side='top', anchor='w', expand=False, pady=10, padx=10)
-
-
+        self.stop_button.pack(side='top', anchor='w', expand=False, pady=10, padx=15)
 
         self.modifications = []
+
+        self.prefix_entries = [ctk.CTkEntry(self) for _ in range(5)]
+        self.comboboxes = [ctk.CTkComboBox(self) for _ in range(5)]
+        self.sufix_entries = [ctk.CTkEntry(self) for _ in range(5)]
+
         self.modifying = False
 
 
