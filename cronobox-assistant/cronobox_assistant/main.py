@@ -84,24 +84,20 @@ def iniciar_programa_velo():
     # Abrir o navegador na página gerada
     time.sleep(1)  # Espera para garantir que o servidor esteja pronto
     webbrowser.open('http://127.0.0.1:5000/pagina_velocidade')
-    threading.Thread(target=pegar_infos_piloto, args=(path_xml, stop_thread_safety)).start()
+    threading.Thread(target=pegar_infos_piloto, args=(path_xml, stop_thread_velo)).start()
 
 
 # Função para reiniciar o programa de Velocidade
 def reiniciar_programa_velo():
-    stop_thread_safety.set()
-    time.sleep(2)
-    stop_thread_safety.clear()
     if entrada.get() == '':
         path_xml = r'C:\TV\XML\current.xml'
     else:
         path_xml = entrada.get()
-    if entrada_velo.get() == '':
-        path_xml_velo = r'C:\TV\XML\Extras\velo.xml'
-    else:
-        path_xml_velo = entrada.get()
-    limpar_xml_velo(path_xml_velo)
-    threading.Thread(target=pegar_infos_piloto, args=(path_xml, path_xml_velo, stop_thread_velo)).start()
+    stop_thread_velo.set()
+    time.sleep(2)
+    stop_thread_velo.clear()
+    limpar_tela()
+    threading.Thread(target=pegar_infos_piloto, args=(path_xml, stop_thread_velo)).start()
 
 
 # Função para finalizar o programa de Velocidade

@@ -82,11 +82,12 @@ def pegar_infos_piloto(path_xml, stop_thread_velo):
                     pit_time_str = str(pit_time)
                     pit_time_segundos = calcular_segundos(pit_time_str)
                 # Definindo velocidade de Entrada de Box
+                print(lastline)
                 if lastline == 'Pit In' and tempo_pit_in > 0:
                     velocidade_ms = 64.5 / tempo_pit_in
                     velocidade_km = round(velocidade_ms * 3.6, 4)
                     sessao = result.get('@runname')
-                    if velocidade_km > 45 and velocidade_km not in queimadas:
+                    if velocidade_km > 50 and velocidade_km not in queimadas:
                         print(f'QUEIMOU ENTRADA DE PIT {velocidade_km} KM/H')
                         velocidade_estouro = round(velocidade_km, 2)
                         queimadas.append(velocidade_km)
@@ -115,7 +116,7 @@ def pegar_infos_piloto(path_xml, stop_thread_velo):
                         print(f'#{numero} PENALIZADO POR QUEIMA DE VELOCIDADE DE {tipo} EM {velocidade_estouro} km/h - {sessao} - {last_time_piloto}')
                 # Definindo velocidade de Pit Time
                 elif lastline == 'Pit Out' and tempo_total_segundos > 0:
-                    velocidade_ms = 326 / tempo_total_segundos
+                    velocidade_ms = 346 / tempo_total_segundos
                     velocidade_km = round(velocidade_ms * 3.6, 4)
                     numero = result.get('@no')
                     sessao = result.get('@runname')
@@ -146,7 +147,7 @@ def pegar_infos_piloto(path_xml, stop_thread_velo):
                             print(
                                 f'Failed to generate HTML: {response.status_code}, Response: {response.text}')
                         print(f'#{numero} PENALIZADO POR QUEIMA DE VELOCIDADE DE {tipo} EM {velocidade_estouro} km/h - {sessao} - {last_time_piloto}')
-                    if pit_time_segundos > 0:
+                    """if pit_time_segundos > 0:
                         pit_time_minimo = pit_time_segundos - 15
                         if tempo_total_segundos > pit_time_segundos and setor6_str not in pit_times:
                             flag = 'Cumpriu'
@@ -229,14 +230,14 @@ def pegar_infos_piloto(path_xml, stop_thread_velo):
                                 else:
                                     print(
                                         f'Failed to generate HTML: {response.status_code}, Response: {response.text}')
-                                pit_times.append(setor6_str)
+                                pit_times.append(setor6_str)"""
                 # Definindo velocidade de Saída de Box
                 elif lastline == 'Speed Pit Out' and tempo_pit_out > 0:
-                    velocidade_ms = 291 / tempo_pit_out
+                    velocidade_ms = 245 / tempo_pit_out
                     velocidade_km = round(velocidade_ms * 3.6, 4)
                     numero = result.get('@no')
                     sessao = result.get('@runname')
-                    if velocidade_km > 45 and velocidade_km not in queimadas:
+                    if velocidade_km > 50 and velocidade_km not in queimadas:
                         print(f'QUEIMOU PIT TIME {velocidade_km} KM/H')
                         velocidade_estouro = round(velocidade_km, 2)
                         queimadas.append(velocidade_km)

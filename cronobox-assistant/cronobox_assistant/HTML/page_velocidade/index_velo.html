@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container_anuncios">
+        <img src="megafone.png" alt="Ícone de anúncio" class="icone_anuncio">
+        <div id="anuncios"></div>
+    </div>
+    <div class="container_safety">
+        <img src="bandeira.png" alt="Ícone de bandeira" class="icone_bandeira">
+        <div id="safety"></div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Função para carregar e analisar o XML
+            function carregarXML(url, callback) {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        callback(xhr.responseXML);
+                    }
+                };
+                xhr.open("GET", url, true);
+                xhr.send();
+            }
+            // Função para exibir os dados de anúncios
+            function exibirAnuncios(xml) {
+                var anuncios = xml.getElementsByTagName("result");
+                var listaAnuncios = "<ul>";
+
+                // Itera sobre todos os anúncios
+                for (var i = 0; i < anuncios.length; i++) {
+                    var textoAnuncio = anuncios[i].getAttribute("text");
+                    
+                    // Adiciona o texto do anúncio à lista
+                    listaAnuncios += "<li>" + textoAnuncio + "</li>";
+                }
+                
+                listaAnuncios += "</ul>";
+                
+                // Atualiza o conteúdo do elemento HTML com a lista de anúncios
+                document.getElementById("anuncios").innerHTML = listaAnuncios;
+            }
+
+            // Função para exibir os dados de anúncios
+            function exibirSafety(xml) {
+            var safety = xml.getElementsByTagName("result");
+            var listaSafety = "<ul>";
+
+            // Itera sobre todos os anúncios
+            for (var i = 0; i < safety.length; i++) {
+                var textoSafety = safety[i].getAttribute("text");
+                // Adiciona o texto do anúncio à lista
+                listaSafety += "<li>" + textoSafety + "</li>";
+            }
+            
+            listaSafety += "</ul>";
+            
+            // Atualiza o conteúdo do elemento HTML com a lista de anúncios
+            document.getElementById("safety").innerHTML = listaSafety;
+            }
+            // Função para carregar e exibir os dados de anúncios
+            function atualizarAnuncios() {
+                carregarXML("velocidade.xml", exibirAnuncios);
+            }
+
+            // Função para carregar e exibir os dados de safety
+            function atualizarSafety() {
+                carregarXML("safety.xml", exibirSafety);
+            }
+
+            // Chamar as funções de atualização uma vez no carregamento da página
+            atualizarAnuncios();
+            atualizarSafety();
+
+            // Definir as funções de atualização para serem chamadas regularmente
+            setInterval(atualizarAnuncios, 1000); // Atualizar os anúncios a cada 1 segundo
+            setInterval(atualizarSafety, 1000); // Atualizar os anúncios a cada 1 segundo
+        });
+    </script>
+</body>
+</html>

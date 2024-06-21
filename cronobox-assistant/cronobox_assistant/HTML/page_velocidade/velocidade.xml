@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resultspage user="cronobox" view="lgView_Announcements">
+	<results>
+		<columns date="Date" time="Time" text="Announcement"/>
+		<result date="11/05/2024" text="#9 NÃO CUMPRIU TEMPO DE PARADA OBRIGATÓRIA 5:09 - TEMPO NO BOX: 53.507" time="12:11:11"/>
+		<result date="11/05/2024" text="#9 NÃO CUMPRIU TEMPO DE PARADA OBRIGATÓRIA 5:09 - TEMPO NO BOX: 37.398" time="12:18:41"/>
+		<result date="11/05/2024" text="#56 NÃO CUMPRIU TEMPO DE PARADA OBRIGATÓRIA 4:25 - TEMPO NO BOX: 27.521" time="12:19:20"/>
+		<result date="11/05/2024" text="#718 NÃO CUMPRIU TEMPO DE PARADA OBRIGATÓRIA 4:49 - TEMPO NO BOX: 1:28.667" time="12:38:03"/>
+		<result date="11/05/2024" text="#117 NÃO CUMPRIU TEMPO DE PARADA OBRIGATÓRIA 5:02 - TEMPO NO BOX: 2:23.104" time="12:45:25"/>
+	</results>
+</resultspage>
