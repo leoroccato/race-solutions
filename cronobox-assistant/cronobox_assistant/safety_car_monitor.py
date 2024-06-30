@@ -148,14 +148,12 @@ def main_loop(path_xml, stop_thread_safety):
                                     data = {
                                         'informacoes': pilotos
                                     }
-
                                     print(f"Enviando solicitação POST para o servidor Flask com dados: {data}")
 
                                     response = requests.post('http://127.0.0.1:5000/atualizar_pilotos', json=data)
                                     print(f"Status da resposta: {response.status_code}")
                                     if response.status_code == 200:
                                         print('HTML generated successfully')
-
                                     else:
                                         print(
                                             f'Failed to generate HTML: {response.status_code}, Response: {response.text}')

@@ -6,8 +6,6 @@ import customtkinter as ctk
 from customtkinter import filedialog
 import xml.etree.ElementTree as ET
 
-# TODO: Concatenar valor na frente e atrás
-
 
 # Criando logger
 logging.basicConfig(level=logging.DEBUG,
@@ -61,38 +59,6 @@ class XMLModifierApp(ctk.CTk):
         except Exception as e:
             logger.error(f'Error loading XML file: {e}')
 
-    # Function to add a new modification
-    def add_modification(self):
-        try:
-            logger.info('Adding modifications')
-
-            # Coleta as modificações dos 5 conjuntos de campos
-            modifications = []
-            for i in range(5):
-                prefixo = self.prefix_entries[i].get()
-                selected_field = self.comboboxes[i].get()
-                sufixo = self.sufix_entries[i].get()
-
-                if prefixo and selected_field and sufixo:
-                    modification = (prefixo, selected_field, sufixo)
-                    modifications.append(modification)
-                    # Limpa os campos
-                    self.prefix_entries[i].delete(0, ctk.END)
-                    self.comboboxes[i].set('')
-                    self.sufix_entries[i].delete(0, ctk.END)
-                    logger.debug(f'Modification added: {modification}')
-                    print(f'Modification added: {modification}')
-                else:
-                    logger.warning(f'Missing field or value in set {i + 1}')
-
-            if modifications:
-                self.modifications.extend(modifications)
-            else:
-                logger.warning('No modifications to add')
-
-        except Exception as e:
-            logger.error(f'Error adding modifications: {e}')
-
     # Function to start modifying
     def start_modifying(self):
         try:
@@ -109,26 +75,37 @@ class XMLModifierApp(ctk.CTk):
         try:
             input_path = self.input_path_entry.get()
             output_path = self.output_path_entry.get()
+            modifications = []
+            for i in range(5):
+                prefix = self.prefix_entries[i].get()
+                selected_field = self.comboboxes[i].get()
+                suffix = self.suffix_entries[i].get()
+                if prefix and selected_field and suffix:
+                    modifications.append((selected_field, prefix, suffix, f"additional{9 + i}"))
+            self.modifications = modifications
+            self.modifying = True  # Iniciar o processo de modificação
             while self.modifying:
                 # Load XML
                 tree = ET.parse(input_path)
                 root = tree.getroot()
                 for modification in self.modifications:
-                    field, value = modification
+                    field, prefix, suffix, new_field = modification
                     for label in root.findall('.//label'):
                         if label.attrib['type'] == field:
                             if label.text is None:
                                 label.text = ""
-                            label.text += value
+                            value = label.text
+                            root.find('.//result').set(new_field, f"{prefix}{value}{suffix}")
                     for result in root.findall('.//result'):
                         if field in result.attrib:
                             if result.attrib[field] is None:
                                 result.attrib[field] = ""
-                            result.attrib[field] += value
-                    # Save the new XML
-                    tree.write(output_path)
-                    logger.info(f'New XML saved as {output_path}')
-                    time.sleep(1)
+                            value = result.attrib[field]
+                            result.set(new_field, f"{prefix}{value}{suffix}")
+                # Save the new XML
+                tree.write(output_path, encoding='utf-8', xml_declaration=True)
+                logger.info(f'New XML saved as {output_path}')
+                time.sleep(1)
         except Exception as e:
             logger.error(f'Error executing the program: {e}')
 
@@ -144,14 +121,14 @@ class XMLModifierApp(ctk.CTk):
         # ------------------------------DEFINE BASIC ATTRIBUTES
 
         self.title("XML Modifier")
-        self.geometry("500x600")
+        self.geometry("500x500")
         self.resizable(width=False, height=False)
 
         # Listas para armazenar widgets
         self.prefix_entries = []
         self.comboboxes = []
         self.suffix_entries = []
-        self.fields = ['meu ovo', 'direito', 'esquerdo']
+        self.fields = ['Waiting XML']
 
         # ------------------------------DEFINE FRAMES
 
@@ -216,9 +193,6 @@ class XMLModifierApp(ctk.CTk):
             combobox.pack(side='top', anchor='w', expand=False, pady=5, padx=15)
             self.comboboxes.append(combobox)
 
-        self.label_running = ctk.CTkLabel(bottom_center_frame, text='Runnning...')
-        self.label_running.pack(side='top', anchor='w', expand=False, pady=10, padx=35)
-
         # -----------------------------BOTTOM RIGHT FRAME ELEMENTS
 
         # Enter what value to alter
@@ -235,11 +209,6 @@ class XMLModifierApp(ctk.CTk):
         self.stop_button.pack(side='top', anchor='w', expand=False, pady=10, padx=15)
 
         self.modifications = []
-
-        self.prefix_entries = [ctk.CTkEntry(self) for _ in range(5)]
-        self.comboboxes = [ctk.CTkComboBox(self) for _ in range(5)]
-        self.sufix_entries = [ctk.CTkEntry(self) for _ in range(5)]
-
         self.modifying = False
 
 

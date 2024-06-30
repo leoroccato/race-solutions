@@ -1,4 +1,4 @@
-/* Estilização geral */
+
 html {
     height: 100%;
 }
@@ -91,8 +91,4 @@ th:nth-child(2), td:nth-child(2) {
 th:last-child, td:last-child {
     border-right: none;
     width: 20%;
-}
-
-.highlight {
-    background-color: red; /* Cor para linhas destacadas */
 }

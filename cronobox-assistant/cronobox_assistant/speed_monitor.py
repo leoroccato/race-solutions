@@ -1,17 +1,12 @@
-import xml.etree.ElementTree as ET
 import xmltodict
 import os
-import winsound
-from datetime import datetime
 import time
-from collections import defaultdict
 import requests
+import winsound
 
 
 lista_arquivos = os.listdir(r"C:\TV\XML")
 queimadas = []
-pit_times = []
-car_pits = []
 informacoes = []
 
 
@@ -30,23 +25,11 @@ def calcular_segundos(tempo_str):
     segundos_total = int(horas) * 3600  # Converta horas em segundos
     segundos_total += int(minutos) * 60  # Converta minutos em segundos
     segundos_total += float(segundos_milissegundos)  # Adicione os segundos e milissegundos
-
     return segundos_total
 
 
-def verificar_pit(car_pits):
-    contagem = defaultdict(int)
-
-    for numero in car_pits:
-        contagem[numero] += 1
-
-        if contagem[numero] == 3:
-            return numero
-    return None
-
-
 # Abrir o arquivo XML e pegar os dados de Evento e Pilotos
-def pegar_infos_piloto(path_xml, stop_thread_velo):
+def pegar_infos_piloto(path_xml, stop_thread_velo, pitin, timein, pitout, limite):
     while not stop_thread_velo.is_set():
         print('Running...')
         with open(path_xml, "rb") as file:
@@ -73,21 +56,21 @@ def pegar_infos_piloto(path_xml, stop_thread_velo):
                 tempo_pit_in = float(setor3)
                 tempo_pit_out = float(setor5)
                 tempo_total_segundos = 0
-                pit_time_segundos = 0
                 if setor6 != 0:
                     # Divida o tempo de pit em minutos, segundos e milissegundos
                     setor6_str = str(setor6)
                     tempo_total_segundos = calcular_segundos(setor6_str)
                 if pit_time != 0:
                     pit_time_str = str(pit_time)
-                    pit_time_segundos = calcular_segundos(pit_time_str)
                 # Definindo velocidade de Entrada de Box
-                print(lastline)
+                if lastline == 'Speed Pit Out':
+                    print(lastline, tempo_pit_out)
+                # QUEIMA DE VELOCIDADE DE ENTRADA DE BOX
                 if lastline == 'Pit In' and tempo_pit_in > 0:
-                    velocidade_ms = 64.5 / tempo_pit_in
+                    velocidade_ms = float(pitin) / tempo_pit_in
                     velocidade_km = round(velocidade_ms * 3.6, 4)
                     sessao = result.get('@runname')
-                    if velocidade_km > 50 and velocidade_km not in queimadas:
+                    if velocidade_km > float(limite) and velocidade_km not in queimadas:
                         print(f'QUEIMOU ENTRADA DE PIT {velocidade_km} KM/H')
                         velocidade_estouro = round(velocidade_km, 2)
                         queimadas.append(velocidade_km)
@@ -102,25 +85,24 @@ def pegar_infos_piloto(path_xml, stop_thread_velo):
                         data = {
                             'informacoes': informacoes
                         }
-
                         print(f"Enviando solicitação POST para o servidor Flask com dados: {data}")
-
                         response = requests.post('http://127.0.0.1:5000/atualizar_velocidade', json=data)
                         print(f"Status da resposta: {response.status_code}")
                         if response.status_code == 200:
                             print('HTML generated successfully')
-
                         else:
                             print(
                                 f'Failed to generate HTML: {response.status_code}, Response: {response.text}')
                         print(f'#{numero} PENALIZADO POR QUEIMA DE VELOCIDADE DE {tipo} EM {velocidade_estouro} km/h - {sessao} - {last_time_piloto}')
-                # Definindo velocidade de Pit Time
+                # QUEIMA DE VELOCIDADE DE PIT TIME
                 elif lastline == 'Pit Out' and tempo_total_segundos > 0:
-                    velocidade_ms = 346 / tempo_total_segundos
+                    print('meio')
+                    print(timein)
+                    velocidade_ms = float(timein) / tempo_total_segundos
                     velocidade_km = round(velocidade_ms * 3.6, 4)
                     numero = result.get('@no')
                     sessao = result.get('@runname')
-                    if velocidade_km > 45 and velocidade_km not in queimadas:
+                    if velocidade_km > float(limite) and velocidade_km not in queimadas:
                         print(f'QUEIMOU PIT TIME {velocidade_km} KM/H')
                         velocidade_estouro = round(velocidade_km, 2)
                         queimadas.append(velocidade_km)
@@ -142,128 +124,38 @@ def pegar_infos_piloto(path_xml, stop_thread_velo):
                         print(f"Status da resposta: {response.status_code}")
                         if response.status_code == 200:
                             print('HTML generated successfully')
-
                         else:
                             print(
                                 f'Failed to generate HTML: {response.status_code}, Response: {response.text}')
                         print(f'#{numero} PENALIZADO POR QUEIMA DE VELOCIDADE DE {tipo} EM {velocidade_estouro} km/h - {sessao} - {last_time_piloto}')
-                    """if pit_time_segundos > 0:
-                        pit_time_minimo = pit_time_segundos - 15
-                        if tempo_total_segundos > pit_time_segundos and setor6_str not in pit_times:
-                            flag = 'Cumpriu'
-                            informacoes.append({
-                                'trecho': flag,
-                                'numero': numero,
-                                'piloto': piloto,
-                                'velocidade': velocidade_estouro,
-                            })
-                            # Envia os dados para o servidor Flask gerar o HTML
-                            data = {
-                                'informacoes': informacoes
-                            }
-
-                            print(f"Enviando solicitação POST para o servidor Flask com dados: {data}")
-
-                            response = requests.post('http://127.0.0.1:5000/atualizar_velocidade', json=data)
-                            print(f"Status da resposta: {response.status_code}")
-                            if response.status_code == 200:
-                                print('HTML generated successfully')
-
-                            else:
-                                print(
-                                    f'Failed to generate HTML: {response.status_code}, Response: {response.text}')
-                            car_pits.append(numero)
-                            pit_times.append(setor6_str)
-
-                            numero_repetido = verificar_pit(car_pits)
-
-                            if numero_repetido is not None:
-                                print(f"#{numero_repetido} JÁ CUMPRIU AS 3 PARADAS OBRIGATÓRIAS")
-                                print(car_pits)
-                            else:
-                                print("Nenhum número se repete três vezes na lista.")
-                        elif tempo_total_segundos < pit_time_segundos and setor6_str not in pit_times:
-                            if tempo_total_segundos > pit_time_minimo:
-                                flag = 'Penalização'
-                                informacoes.append({
-                                    'trecho': flag,
-                                    'numero': numero,
-                                    'piloto': piloto,
-                                    'velocidade': velocidade_estouro,
-                                })
-                                # Envia os dados para o servidor Flask gerar o HTML
-                                data = {
-                                    'informacoes': informacoes
-                                }
-
-                                print(f"Enviando solicitação POST para o servidor Flask com dados: {data}")
-
-                                response = requests.post('http://127.0.0.1:5000/atualizar_velocidade', json=data)
-                                print(f"Status da resposta: {response.status_code}")
-                                if response.status_code == 200:
-                                    print('HTML generated successfully')
-
-                                else:
-                                    print(
-                                        f'Failed to generate HTML: {response.status_code}, Response: {response.text}')
-                                pit_times.append(setor6_str)
-                            else:
-                                flag = 'Não cumpriu'
-                                informacoes.append({
-                                    'trecho': flag,
-                                    'numero': numero,
-                                    'piloto': piloto,
-                                    'velocidade': velocidade_estouro,
-                                })
-                                # Envia os dados para o servidor Flask gerar o HTML
-                                data = {
-                                    'informacoes': informacoes
-                                }
-
-                                print(f"Enviando solicitação POST para o servidor Flask com dados: {data}")
-
-                                response = requests.post('http://127.0.0.1:5000/atualizar_velocidade', json=data)
-                                print(f"Status da resposta: {response.status_code}")
-                                if response.status_code == 200:
-                                    print('HTML generated successfully')
-
-                                else:
-                                    print(
-                                        f'Failed to generate HTML: {response.status_code}, Response: {response.text}')
-                                pit_times.append(setor6_str)"""
-                # Definindo velocidade de Saída de Box
+                # QUEIMA DE VELOCIDADE DE SAIDA DE BOX
                 elif lastline == 'Speed Pit Out' and tempo_pit_out > 0:
-                    velocidade_ms = 245 / tempo_pit_out
+                    print('saida')
+                    print(pitout)
+                    velocidade_ms = float(pitout) / tempo_pit_out
                     velocidade_km = round(velocidade_ms * 3.6, 4)
                     numero = result.get('@no')
-                    sessao = result.get('@runname')
-                    if velocidade_km > 50 and velocidade_km not in queimadas:
+                    print('Cheguei aqui')
+                    print(velocidade_km)
+                    if velocidade_km > float(limite) and velocidade_km not in queimadas:
                         print(f'QUEIMOU PIT TIME {velocidade_km} KM/H')
                         velocidade_estouro = round(velocidade_km, 2)
                         queimadas.append(velocidade_km)
                         tipo = 'SAÍDA DE BOX'
+                        classe = 'highlight'
+                        winsound.Beep(534, 900)
                         informacoes.append({
                             'trecho': tipo,
                             'numero': numero,
                             'piloto': piloto,
                             'velocidade': velocidade_estouro,
+                            'classe': classe
                         })
                         # Envia os dados para o servidor Flask gerar o HTML
                         data = {
                             'informacoes': informacoes
                         }
-
-                        print(f"Enviando solicitação POST para o servidor Flask com dados: {data}")
-
-                        response = requests.post('http://127.0.0.1:5000/atualizar_velocidade', json=data)
-                        print(f"Status da resposta: {response.status_code}")
-                        if response.status_code == 200:
-                            print('HTML generated successfully')
-
-                        else:
-                            print(
-                                f'Failed to generate HTML: {response.status_code}, Response: {response.text}')
-                        print(f'#{numero} PENALIZADO POR QUEIMA DE VELOCIDADE DE {tipo} EM {velocidade_estouro} km/h - {sessao} - {last_time_piloto}')
+                        requests.post('http://127.0.0.1:5000/atualizar_velocidade', json=data)
                 else:
                     continue
         else:

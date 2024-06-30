@@ -8,6 +8,8 @@ informacoes_globais = []
 informacoes_velocidade = []
 horario_safety_car_global = ""
 
+# ------------------------ ROTAS PÁGINAS HTML
+
 
 @app.route('/pagina_safety')
 def index():
@@ -17,6 +19,8 @@ def index():
 @app.route('/pagina_velocidade')
 def pagina_velocidade():
     return render_template('index_velocidade.html')
+
+# ------------------------ MÉTODOS GET
 
 
 @app.route('/dados_horario', methods=['GET'])
@@ -41,6 +45,8 @@ def dados_velocidade():
     return jsonify({
         'informacoes': informacoes_velocidade
     })
+
+# ------------------------ MÉTODOS POST
 
 
 @app.route('/atualizar_horario', methods=['POST'])
@@ -122,7 +128,33 @@ def atualizar_velocidade():
     except Exception as e:
         print(f"Error processing request: {e}")
         return jsonify({"error": str(e)}), 500
+"""
+@app.route('/atualizar_pitstops', methods=['POST'])
+def atualizar_velocidade():
+    template_name = 'index_pitstop.html'
+    global informacoes_velocidade
+    print("Recebendo solicitação POST em /atualizar_velocidade")
+    try:
+        informacoes = request.json.get('informacoes')
+        if informacoes is None:
+            raise ValueError("informacoes não fornecido")
 
+        # Atualiza as informações globais
+        informacoes_velocidade = informacoes
+
+        # Gera o HTML atualizado
+        html_content = gerar_pagina_html(informacoes_velocidade, template_name)
+
+        # Salva o HTML atualizado no arquivo
+        with open('templates/index_pitstop.html', 'w', encoding='utf-8') as f:
+            f.write(html_content)
+
+        return 'Informações de velocidade atualizadas com sucesso', 200
+
+    except Exception as e:
+        print(f"Error processing request: {e}")
+        return jsonify({"error": str(e)}), 500
+"""
 
 @app.route('/reset_dados', methods=['POST'])
 def reset_dados():

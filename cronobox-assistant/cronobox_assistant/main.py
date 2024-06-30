@@ -10,9 +10,12 @@ from server import run_server
 from safety_car_monitor import main_loop
 from speed_monitor import pegar_infos_piloto
 
-# Criando as Threads para eventos de Safety e Velocidade
+# Flags de controle das threads de eventos
 stop_thread_safety = threading.Event()
 stop_thread_velo = threading.Event()
+stop_thread_pitstop = threading.Event()
+
+# ---------------------Funções Auxiliares------------------------------------
 
 
 # Função para limpar a tela
@@ -43,11 +46,10 @@ def iniciar_programa_safety():
         path_xml = r'C:\TV\XML\current.xml'
     else:
         path_xml = entrada.get()
-
     stop_thread_safety.clear()
     limpar_tela()
     # Abrir o navegador na página do Safety
-    time.sleep(1)  # Espera para garantir que o servidor esteja pronto
+    time.sleep(1)  # Delay para garantir que o servidor esteja pronto
     webbrowser.open('http://127.0.0.1:5000/pagina_safety')
     threading.Thread(target=main_loop, args=(path_xml, stop_thread_safety)).start()
 
@@ -84,7 +86,7 @@ def iniciar_programa_velo():
     # Abrir o navegador na página gerada
     time.sleep(1)  # Espera para garantir que o servidor esteja pronto
     webbrowser.open('http://127.0.0.1:5000/pagina_velocidade')
-    threading.Thread(target=pegar_infos_piloto, args=(path_xml, stop_thread_velo)).start()
+    threading.Thread(target=pegar_infos_piloto, args=(path_xml, stop_thread_velo, pitin.get(), timein.get(), pitout.get(), limite.get())).start()
 
 
 # Função para reiniciar o programa de Velocidade
@@ -185,20 +187,26 @@ dist_frame = ctk.CTkFrame(entries_frame, fg_color='transparent')
 dist_frame.pack(side='right', fill='x', expand=True)
 
 # Campos de entrada
-entry_label_1 = ctk.CTkLabel(dist_frame, text='Distância Pit In (m):')
-entry_label_1.pack(side='top', anchor='e', padx=115)
-entry_1 = ctk.CTkEntry(dist_frame)
-entry_1.pack(side='top', anchor='e', padx=100)
+pitin_label = ctk.CTkLabel(dist_frame, text='Distância Pit In (m):')
+pitin_label.pack(side='top', anchor='e', padx=115)
+pitin = ctk.CTkEntry(dist_frame)
+pitin.pack(side='top', anchor='e', padx=100)
 
-entry_label_2 = ctk.CTkLabel(dist_frame, text='Distância Time In (m):')
-entry_label_2.pack(side='top', anchor='e', padx=105)
-entry_2 = ctk.CTkEntry(dist_frame)
-entry_2.pack(side='top', anchor='e', padx=100)
 
-entry_label_3 = ctk.CTkLabel(dist_frame, text='Distância Pit Out (m):')
-entry_label_3.pack(side='top', anchor='e', padx=110)
-entry_3 = ctk.CTkEntry(dist_frame)
-entry_3.pack(side='top', anchor='e', padx=100)
+timein_label = ctk.CTkLabel(dist_frame, text='Distância Time In (m):')
+timein_label.pack(side='top', anchor='e', padx=105)
+timein = ctk.CTkEntry(dist_frame)
+timein.pack(side='top', anchor='e', padx=100)
+
+pitout_label = ctk.CTkLabel(dist_frame, text='Distância Pit Out (m):')
+pitout_label.pack(side='top', anchor='e', padx=110)
+pitout = ctk.CTkEntry(dist_frame)
+pitout.pack(side='top', anchor='e', padx=100)
+
+limite_label = ctk.CTkLabel(dist_frame, text='Velocidade Limite (km/h):')
+limite_label.pack(side='top', anchor='e', padx=100)
+limite = ctk.CTkEntry(dist_frame)
+limite.pack(side='top', anchor='e', padx=100)
 
 # Frame para Check Safety Line
 line_frame = ctk.CTkFrame(entries_frame, fg_color='transparent')

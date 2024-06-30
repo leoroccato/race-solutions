@@ -43,27 +43,27 @@ def database_insert_piloto(conn,
                                 abreviado, contagemmanual, piloto2, piloto1, bop, categoria, equipe, firstname, numero,
                            posicaonacategoria, posicao, marcador, ultimapassagem, ultimotempo, tempoideal,
                            patchcarroslocal, patchcarros, patchcategoria, voltaspiloto1, voltaspiloto2, voltaspiloto3,
-                           tempoidealdiferenca
+                           tempoidealdiferenca, evento
                            ):
     try:
         cur = conn.cursor()
 
-        sql = """INSERT INTO dados_xml_voltas (
+        sql = """INSERT INTO dados_xml_corridas (
                             melhorsetor3, melhorsetor2, melhorsetor1, setor3, setor2, setor1, timeline, tempododia,
                             pitstops, melhornavolta, melhorvolta, intervalo, diferenca, tempototal, ultimavolta,
                             abreviado, contagemmanual, piloto2, piloto1, bop, categoria, equipe, firstname, numero,
                             posicaonacategoria, posicao, marcador, ultimapassagem, ultimotempo, tempoideal,
                             patchcarroslocal, patchcarros, patchcategoria, voltaspiloto1, voltaspiloto2, voltaspiloto3,
-                            tempoidealdiferenca
+                            tempoidealdiferenca, evento
                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
         data = (
             melhorsetor3, melhorsetor2, melhorsetor1, setor3, setor2, setor1, timeline, tempododia,
                                pitstops, melhornavolta, melhorvolta, intervalo, diferenca, tempototal, ultimavolta,
                                abreviado, contagemmanual, piloto2, piloto1, bop, categoria, equipe, firstname, numero,
                                 posicaonacategoria, posicao, marcador, ultimapassagem, ultimotempo, tempoideal,
                             patchcarroslocal, patchcarros, patchcategoria, voltaspiloto1, voltaspiloto2, voltaspiloto3,
-                             tempoidealdiferenca
+                             tempoidealdiferenca, evento
         )
         cur.execute(sql, data)
 
@@ -82,7 +82,7 @@ def database(tipo_insert, etapa=None, bandeira=None, grupo=None, melhor_volta_po
              piloto1=None, bop=None, categoria=None, equipe=None, firstname=None, numero=None, posicaonacategoria=None,
              posicao=None, marcador=None, ultimapassagem=None, ultimotempo=None, tempoideal=None, patchcarroslocal=None,
              patchcarros=None, patchcategoria=None, voltaspiloto1=None, voltaspiloto2=None, voltaspiloto3=None,
-             tempoidealdiferenca=None):
+             tempoidealdiferenca=None, evento=None):
     conn = database_connect()
 
     if tipo_insert == 'evento' and conn:
@@ -98,7 +98,7 @@ def database(tipo_insert, etapa=None, bandeira=None, grupo=None, melhor_volta_po
                                 abreviado, contagemmanual, piloto2, piloto1, bop, categoria, equipe, firstname, numero,
                                posicaonacategoria, posicao, marcador, ultimapassagem, ultimotempo, tempoideal,
                                 patchcarroslocal, patchcarros, patchcategoria, voltaspiloto1, voltaspiloto2, voltaspiloto3,
-                               tempoidealdiferenca)
+                               tempoidealdiferenca, evento)
         conn.close()
 
 

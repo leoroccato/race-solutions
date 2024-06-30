@@ -177,7 +177,7 @@ def gerar_relatorio_graficos(path_header, groupname, runname, hora_inicial_execu
     ]
 
     # Configurando intervalos de tempo de leitura
-    hora_final_execucao = datetime.now(pytz.timezone('America/Sao_Paulo')).replace(second=0, microsecond=0)
+    hora_final_execucao = datetime.now(pytz.timezone('Europe/Lisbon')).replace(second=0, microsecond=0)
     horarios = [hora_inicial_execucao]
     while horarios[-1] < hora_final_execucao:
 
@@ -433,7 +433,7 @@ def gerar_relatorio(path_header, groupname, runname, hora_inicial_execucao):
 def encerrar_programa(path_header, groupname, hora_inicial_execucao_dia):
     try:
         print('Encerrando programa e gerando relatório diário...')
-        hora_final_execucao = datetime.now(pytz.timezone('America/Sao_Paulo')).replace(second=0, microsecond=0)
+        hora_final_execucao = datetime.now(pytz.timezone('Europe/Lisbon')).replace(second=0, microsecond=0)
         gerar_relatorio_diario(path_header, groupname, hora_inicial_execucao_dia, hora_final_execucao)
         print('Programa encerrado.')
     except Exception as e:
@@ -483,8 +483,8 @@ def main():
     bandeira_inicial = None
 
     # Setando a hora de inicio da execução
-    hora_inicial_execucao = datetime.now(pytz.timezone('America/Sao_Paulo')).replace(second=0, microsecond=0)
-    hora_inicial_execucao_dia = datetime.now(pytz.timezone('America/Sao_Paulo')).replace(second=0, microsecond=0)
+    hora_inicial_execucao = datetime.now(pytz.timezone('Europe/Lisbon')).replace(second=0, microsecond=0)
+    hora_inicial_execucao_dia = datetime.now(pytz.timezone('Europe/Lisbon')).replace(second=0, microsecond=0)
 
     # Rotina de execução do programa
     try:
@@ -510,8 +510,8 @@ def main():
                             gerar_relatorio_completo(path_header, groupname, runname, horarios_formatados)
                             print(f'Relatório gerado: {groupname} - {runname}. Aguardando nova alteração da bandeira...')
                         bandeira_inicial = None
-                        hora_inicial_execucao = datetime.now(pytz.timezone('America/Sao_Paulo')).replace(second=0, microsecond=0)
-                if flag not in ['none', 'warmup']:      # Verifica se a bandeira é verde
+                        hora_inicial_execucao = datetime.now(pytz.timezone('Europe/Lisbon')).replace(second=0, microsecond=0)
+                if flag not in ['none', 'warmup']: # Verifica se a bandeira é verde
                     meteorologia()
                     old_runname, old_groupname = esperar_verificar(runname, groupname)
             except Exception as e:
