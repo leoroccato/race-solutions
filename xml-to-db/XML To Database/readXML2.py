@@ -136,7 +136,7 @@ def pegar_infos(path_xml):
                     'voltaspiloto2': 0,
                     'voltaspiloto3': 0,
                     'tempoidealdiferenca': '0',
-                    'evento': '5E Porsche Cup - Treino Livre 1 - Challenge'
+                    'evento': '6E Porsche Cup - Corrida 2 - Challenge'
                 }
                 lista_pilotos.append(dic_pilotos)
                 tipo_insert = 'piloto'

@@ -1,0 +1,29 @@
+
+body {
+    margin: 0;
+    height: 100%;  /* Faz o body ocupar toda a altura da tela */
+    display: flex; /* Define o body como um flex container */
+    flex-direction: column; /* Organiza os itens em colunas */
+    background-color: black;
+}
+
+.container_anuncios, .container_safety {
+    display: flex; /* Torna cada container um flex container */
+    align-items: center; /* Centraliza os itens verticalmente dentro do container */
+    justify-content: flex-start;
+    width: 100%; /* Faz cada container esticar para ocupar toda a largura da tela */
+    height: 50%; /* Faz cada container ocupar metade da altura da tela */
+    font-weight: 1000;
+    color: white;
+    padding: 10px;
+}
+
+.icone_anuncio, .icone_bandeira {
+    margin-right: 20px;
+    width: 50px;
+    height: 50px;
+}
+
+#anuncios, #safety {
+    flex-grow: 1; /* Permite que o div de conteúdo cresça para ocupar o espaço restante */
+}

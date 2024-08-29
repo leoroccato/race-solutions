@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style_velocidade.css">
+    <title>Velocidade</title>
+</head>
+<body>
+    <header>
+    </header>
+    <body>
+        <div class="timing-screen">
+            <table>
+                <thead>
+                    <tr>
+                        <th>NÚMERO</th>
+                        <th>PILOTO</th>
+                        <th>PITSTOPS</th>
+                        <th>TEMPO</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            function atualizarDadosPilotos() {
+                $.ajax({
+                    url: '/dados_velocidade',
+                    method: 'GET',
+                    success: function(data) {
+                        var tableBody = $('#table-body');
+                        tableBody.empty();
+                        data.informacoes.forEach(function(info) {
+                            var row = '<tr class="' + info.classe + '">' +
+                                '<td>' + info.numero + '</td>' +
+                                '<td>' + info.piloto + '</td>' +
+                                '<td>' + info.pitstop + '</td>' +
+                                '<td>' + info.tempo + '</td>' +
+                                '</tr>';
+                            
+                            tableBody.prepend(row);
+                        });
+                    }
+                });
+            }
+            // Atualiza o horário e os dados dos pilotos a cada 5 segundos
+            setInterval(atualizarDadosPilotos, 5000);
+        </script>
+    </body>
+    </html>
+</body>
+</html>
+
+    

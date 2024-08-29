@@ -112,8 +112,6 @@ class XMLModifierApp(ctk.CTk):
     # Function to stop modifying
     def stop_modifying(self):
         self.modifying = False
-        self.destroy()
-        sys.exit()
 
     def __init__(self):
         super().__init__()
