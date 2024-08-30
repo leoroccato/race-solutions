@@ -7,13 +7,10 @@ import requests
 import customtkinter as ctk
 # Módulos
 from server import run_server
-from safety_car_monitor import main_loop
 from speed_monitor import pegar_infos_piloto
 
 # Flags de controle das threads de eventos
-stop_thread_safety = threading.Event()
 stop_thread_velo = threading.Event()
-stop_thread_pitstop = threading.Event()
 
 # ---------------------Funções Auxiliares------------------------------------
 
@@ -37,40 +34,6 @@ def iniciar_server():
     # Iniciar o servidor Flask em uma thread separada
     threading.Thread(target=run_server).start()
 
-# ---------------------Safety Controls------------------------------------
-
-
-# Função para iniciar o programa do Safety
-def iniciar_programa_safety():
-    if entrada.get() == '':
-        path_xml = r'C:\TV\XML\current.xml'
-    else:
-        path_xml = entrada.get()
-    stop_thread_safety.clear()
-    limpar_tela()
-    # Abrir o navegador na página do Safety
-    time.sleep(1)  # Delay para garantir que o servidor esteja pronto
-    webbrowser.open('http://127.0.0.1:5000/pagina_safety')
-    threading.Thread(target=main_loop, args=(path_xml, stop_thread_safety)).start()
-
-
-# Função para reiniciar o programa do Safety
-def reiniciar_programa_safety():
-    stop_thread_safety.set()
-    time.sleep(2)
-    stop_thread_safety.clear()
-    if entrada.get() == '':
-        path_xml = r'C:\TV\XML\current.xml'
-    else:
-        path_xml = entrada.get()
-    limpar_tela()
-    threading.Thread(target=main_loop, args=(path_xml, stop_thread_safety)).start()
-
-
-# Função para finalizar o programa do Safety
-def finalizar_programa_safety():
-    limpar_tela()
-    stop_thread_safety.set()
 
 # ---------------------Velocidade Controls------------------------------------
 
@@ -81,12 +44,35 @@ def iniciar_programa_velo():
         path_xml = r'C:\TV\XML\current.xml'
     else:
         path_xml = entrada.get()
+    # Coletando as distâncias dos campos de entrada
+    distancias = [
+        first.get(),
+        second.get(),
+        third.get(),
+        limite.get()
+    ]
+
+    # Coletando as seleções dos comboboxes
+    comboboxes = [
+        combobox1.get(),
+        combobox2.get(),
+        combobox3.get(),
+        combobox4.get()
+    ]
+
+    # Coletando as strings adicionais dos campos de entrada
+    strings = [
+        string1.get(),
+        string2.get(),
+        string3.get(),
+        string4.get()
+    ]
     stop_thread_velo.clear()
     limpar_tela()
     # Abrir o navegador na página gerada
     time.sleep(1)  # Espera para garantir que o servidor esteja pronto
     webbrowser.open('http://127.0.0.1:5000/pagina_velocidade')
-    threading.Thread(target=pegar_infos_piloto, args=(path_xml, stop_thread_velo, pitin.get(), timein.get(), pitout.get(), limite.get())).start()
+    threading.Thread(target=pegar_infos_piloto, args=(path_xml, stop_thread_velo, distancias, comboboxes, strings, limite)).start()
 
 
 # Função para reiniciar o programa de Velocidade
@@ -144,37 +130,21 @@ iniciar_server_btn.pack(side='top', anchor='n', pady=10, padx=100)
 buttons_frame = ctk.CTkFrame(bottom_frame, fg_color='transparent')
 buttons_frame.pack(side='top', fill='x')
 
-# Frame para botões de Safety
-safety_frame = ctk.CTkFrame(buttons_frame, fg_color='transparent')
-safety_frame.pack(side='left', fill='x', expand=True)
-
-safety_label = ctk.CTkLabel(safety_frame, text='Controles Programa Safety', font=("TkDefaultFont", 14, 'bold'))
-safety_label.pack(side='top', anchor='w', pady=10, padx=80)
-
-iniciar_safety_btn = ctk.CTkButton(safety_frame, text="START", font=("TkDefaultFont", 16, 'bold'), corner_radius=10, fg_color="#636301", hover_color="black", command=iniciar_programa_safety)
-iniciar_safety_btn.pack(side='top', anchor='w', pady=10, padx=100)
-
-restart_safety_btn = ctk.CTkButton(safety_frame, text="RESTART", font=("TkDefaultFont", 16, 'bold'), corner_radius=10, fg_color="#636301", hover_color="black", command=reiniciar_programa_safety)
-restart_safety_btn.pack(side='top', anchor='w', pady=10, padx=100)
-
-finalizar_safety_btn = ctk.CTkButton(safety_frame, text="STOP", font=("TkDefaultFont", 16, 'bold'), corner_radius=10, fg_color="#636301", hover_color="black", command=finalizar_programa_safety)
-finalizar_safety_btn.pack(side='top', anchor='w', pady=10, padx=100)
-
 # Frame para botões de Velocidade
 velo_frame = ctk.CTkFrame(buttons_frame, fg_color='transparent')
-velo_frame.pack(side='right', fill='x', expand=True)
+velo_frame.pack(side='top', fill='x', expand=True)
 
 velo_label = ctk.CTkLabel(velo_frame, text='Controles Programa Velocidade', font=("TkDefaultFont", 14, 'bold'))
-velo_label.pack(side='top', anchor='e', pady=10, padx=50)
+velo_label.pack(side='top', pady=10, padx=50)
 
 iniciar_velo_btn = ctk.CTkButton(velo_frame, text="START", font=("TkDefaultFont", 16, 'bold'), fg_color="#750202", corner_radius=10, hover_color="black", command=iniciar_programa_velo)
-iniciar_velo_btn.pack(side='top', anchor='e', pady=10, padx=100)
+iniciar_velo_btn.pack(side='top', pady=10, padx=100)
 
 restart_velo_btn = ctk.CTkButton(velo_frame, text="RESTART", font=("TkDefaultFont", 16, 'bold'), fg_color="#750202", corner_radius=10, hover_color="black", command=reiniciar_programa_velo)
-restart_velo_btn.pack(side='top', anchor='e', pady=10, padx=100)
+restart_velo_btn.pack(side='top', pady=10, padx=100)
 
 finalizar_velo_btn = ctk.CTkButton(velo_frame, text="STOP", font=("TkDefaultFont", 16, 'bold'), fg_color="#750202", corner_radius=10, hover_color="black", command=finalizar_programa_velo)
-finalizar_velo_btn.pack(side='top', anchor='e', pady=10, padx=100)
+finalizar_velo_btn.pack(side='top', pady=10, padx=100)
 
 # ---------------------Check e Inputs Bottom Frame------------------------------------
 
@@ -182,38 +152,71 @@ finalizar_velo_btn.pack(side='top', anchor='e', pady=10, padx=100)
 entries_frame = ctk.CTkFrame(bottom_frame, fg_color='transparent')
 entries_frame.pack(side='top', fill='x')
 
-# Frame para Campos de entrada
+# Frame para os comboboxes à esquerda
+combobox_frame = ctk.CTkFrame(entries_frame, fg_color='transparent')
+combobox_frame.pack(side='left', padx=20, pady=10)
+
+# Frame para os campos de entrada centralizados
 dist_frame = ctk.CTkFrame(entries_frame, fg_color='transparent')
-dist_frame.pack(side='right', fill='x', expand=True)
+dist_frame.pack(side='left', padx=20, pady=10, expand=True)
 
-# Campos de entrada
-pitin_label = ctk.CTkLabel(dist_frame, text='Distância Pit In (m):')
-pitin_label.pack(side='top', anchor='e', padx=115)
-pitin = ctk.CTkEntry(dist_frame)
-pitin.pack(side='top', anchor='e', padx=100)
+# Frame para os campos de entrada de string à direita
+string_frame = ctk.CTkFrame(entries_frame, fg_color='transparent')
+string_frame.pack(side='left', padx=20, pady=10)
 
+# Comboboxes à esquerda
+combobox1 = ctk.CTkComboBox(combobox_frame, values=["Setor 3", "Setor 4", "Setor 5", "Setor 6"])
+combobox1.pack(anchor='w', pady=5)
 
-timein_label = ctk.CTkLabel(dist_frame, text='Distância Time In (m):')
-timein_label.pack(side='top', anchor='e', padx=105)
-timein = ctk.CTkEntry(dist_frame)
-timein.pack(side='top', anchor='e', padx=100)
+combobox2 = ctk.CTkComboBox(combobox_frame, values=["Setor 3", "Setor 4", "Setor 5", "Setor 6"])
+combobox2.pack(anchor='w', pady=5)
 
-pitout_label = ctk.CTkLabel(dist_frame, text='Distância Pit Out (m):')
-pitout_label.pack(side='top', anchor='e', padx=110)
-pitout = ctk.CTkEntry(dist_frame)
-pitout.pack(side='top', anchor='e', padx=100)
+combobox3 = ctk.CTkComboBox(combobox_frame, values=["Setor 3", "Setor 4", "Setor 5", "Setor 6"])
+combobox3.pack(anchor='w', pady=5)
+
+combobox4 = ctk.CTkComboBox(combobox_frame, values=["Setor 3", "Setor 4", "Setor 5", "Setor 6"])
+combobox4.pack(anchor='w', pady=5)
+
+# Labels e Campos de entrada centralizados
+first_label = ctk.CTkLabel(dist_frame, text='Distância (m):')
+first_label.pack(anchor='center')
+
+first = ctk.CTkEntry(dist_frame)
+first.pack(anchor='center')
+
+second_label = ctk.CTkLabel(dist_frame, text='Distância (m):')
+second_label.pack(anchor='center')
+
+second = ctk.CTkEntry(dist_frame)
+second.pack(anchor='center')
+
+third_label = ctk.CTkLabel(dist_frame, text='Distância (m):')
+third_label.pack(anchor='center')
+
+third = ctk.CTkEntry(dist_frame)
+third.pack(anchor='center')
 
 limite_label = ctk.CTkLabel(dist_frame, text='Velocidade Limite (km/h):')
-limite_label.pack(side='top', anchor='e', padx=100)
+limite_label.pack(anchor='center')
+
 limite = ctk.CTkEntry(dist_frame)
-limite.pack(side='top', anchor='e', padx=100)
+limite.pack(anchor='center', pady=5)
 
-# Frame para Check Safety Line
-line_frame = ctk.CTkFrame(entries_frame, fg_color='transparent')
-line_frame.pack(side='left', fill='x', expand=True)
+# Campos de entrada de string à direita
+string1 = ctk.CTkEntry(string_frame)
+string1.pack(anchor='w', pady=5)
 
-line_box = ctk.CTkCheckBox(line_frame, text='Safety Line na pista?')
-line_box.pack(side='top', anchor='w', pady=20, padx=100)
+string2 = ctk.CTkEntry(string_frame)
+string2.pack(anchor='w', pady=5)
+
+string3 = ctk.CTkEntry(string_frame)
+string3.pack(anchor='w', pady=5)
+
+string4 = ctk.CTkEntry(string_frame)
+string4.pack(anchor='w', pady=5)
+
+
+
 
 
 if __name__ == "__main__":
